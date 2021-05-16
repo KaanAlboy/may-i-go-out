@@ -1,10 +1,17 @@
 var mayIGoOut = true;
 var publicTransportRight = true;
-const responseList = [
+var anyOtherPassport = false;
+const positiveActivities = [
+  "İşe gidebilirsiniz",
+  "Bu kadar...",
+  "Gerçekten... başka bir şey yok",
+];
+const negativeActivities = [
   "Ekmek alıp dünyayı gezebilirsiniz",
   "Takımınızın şampiyonluğunu maskesiz kutlayabilirsiniz",
   "Bazı şeyleri protesto edebilirsiniz",
 ];
+const foreignActivities = ["Enjoy, I'm vaccinated!"];
 
 const form = document.getElementById("main-form");
 const formContainer = document.getElementById("response-container");
@@ -30,49 +37,54 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   //Get form values
-  const age = parseInt(form.elements[0].value);
-  const day = form.elements[1].value;
-  const month = parseInt(form.elements[2].value) + 1;
-  const hour = parseInt(form.elements[3].value);
-  const vacStatus = form.elements[4].value;
+  const age = parseInt(form.elements[1].value);
+  const passport = form.elements[0].value;
+  const day = form.elements[2].value;
+  const month = parseInt(form.elements[3].value) + 1;
+  const hour = parseInt(form.elements[4].value);
+  const vacStatus = form.elements[5].value;
 
   //Convert int to proper date
   const date = month + "-" + day + "-2021";
   const dateObj = new Date(date);
-  console.log(dateObj.getDay());
+  console.log(form.elements);
 
-  if (age >= 65 || age < 18) {
-    publicTransportRight = false;
-  }
-  //Weekends
-  if (dateObj.getDay() === 6 || dateObj.getDay() === 0) {
-    mayIGoOut = false;
-    publicTransportRight = false;
+  if (passport === "true") {
+    mayIGoOut = true;
+    publicTransportRight = true;
   } else {
-    if (hour >= 21 || hour < 5) {
+    if (age >= 65 || age < 18) {
+      publicTransportRight = false;
+    }
+    //Weekends
+    if (dateObj.getDay() === 6 || dateObj.getDay() === 0) {
       mayIGoOut = false;
+      publicTransportRight = false;
+    } else {
+      if (hour >= 21 || hour < 5) {
+        mayIGoOut = false;
+      }
+    }
+
+    if (age >= 65 && vacStatus === "false") {
+      if (hour >= 14 || hour < 10) {
+        mayIGoOut = false;
+      }
     }
   }
-
-  if (age >= 65 && vacStatus === "false") {
-    if (hour >= 14 || hour < 10) {
-      mayIGoOut = false;
-    }
-  }
-
-  createResponse(mayIGoOut, publicTransportRight);
+  createResponse(mayIGoOut, publicTransportRight, passport);
   console.log(mayIGoOut);
   mayIGoOut = true;
   publicTransportRight = true;
 });
 
-function createResponse(mayIGoOut, publicTransportRight) {
+function createResponse(mayIGoOut, publicTransportRight, isForeign) {
   let responseType = "alert-danger";
   let responseTitle = "Dışarı çıkamazsınız!";
   let responseText = publicTransportRight
     ? "İzinli saatlerde toplu taşıma: Kullanabilirsiniz"
     : "İzinli saatlerde toplu taşıma: Kullanamazsınız";
-  const genericText = "Yapabilecekleriniz: ";
+  let genericText = "Yapabilecekleriniz: ";
 
   if (mayIGoOut) {
     responseType = "alert-success";
@@ -80,6 +92,15 @@ function createResponse(mayIGoOut, publicTransportRight) {
     responseText = publicTransportRight
       ? "İzinli saatlerde toplu taşıma: Kullanabilirsiniz"
       : "İzinli saatlerde toplu taşıma: Kullanamazsınız";
+  }
+
+  let responseList = mayIGoOut ? positiveActivities : negativeActivities;
+
+  if (isForeign === "true") {
+    responseTitle = "Enjoy, I'm vaccinated!";
+    responseText = "";
+    genericText = "";
+    responseList = [];
   }
 
   if (!document.getElementById("response")) {
@@ -115,6 +136,16 @@ function createResponse(mayIGoOut, publicTransportRight) {
     const response = document.getElementById("response");
     response.children[0].textContent = responseTitle;
     response.children[1].textContent = responseText;
+    response.children[2].textContent = genericText;
+    response.removeChild(response.lastChild);
+    const list = document.createElement("ul");
+
+    for (let index = 0; index < responseList.length; index++) {
+      const li = document.createElement("li");
+      li.textContent = responseList[index];
+      list.appendChild(li);
+    }
+    response.appendChild(list);
     response.classList.remove("alert-danger", "alert-success");
     response.classList.add(responseType);
   }
