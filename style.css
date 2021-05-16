@@ -1,0 +1,43 @@
+html,
+body,
+.main-container{
+    height: 100%;
+}
+
+body{
+    background-image: url("src/3142803.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.main-container{
+    width: 40%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+.form-container{
+    margin-bottom: 50px;
+    background-color:white;
+    padding: 20px 50px;
+    border-radius: 16px;
+}
+
+h1{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.date-line{
+    display: flex;
+}
+
+.input-group{
+    margin-right: 5px;
+}
+
+.alert{
+    display:block;
+}
