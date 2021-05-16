@@ -63,6 +63,7 @@ form.addEventListener("submit", (e) => {
   createResponse(mayIGoOut, publicTransportRight);
   console.log(mayIGoOut);
   mayIGoOut = true;
+  publicTransportRight = true;
 });
 
 function createResponse(mayIGoOut, publicTransportRight) {
